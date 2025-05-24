@@ -1,0 +1,9 @@
+{
+  "name": "com.microbytes.silvershark",
+  "description": "SilverShark Native Host",
+  "path": ".\\SilverShark.exe",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://jjdbfpmilocmokhbhhkgicfaaghlnnno/"
+  ]
+} 

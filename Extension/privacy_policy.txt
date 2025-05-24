@@ -1,0 +1,32 @@
+Privacy Policy for SilverShark Extension
+
+Last Updated: [Insert Date of Publication]
+
+Thank you for using SilverShark (the "Extension"). This privacy policy describes how [Your Name/Company Name] ("we", "us", or "our") handles information in connection with your use of the Extension.
+
+Information We Do Not Collect
+
+The SilverShark Extension is designed to operate entirely locally on your computer. We do not collect, store, transmit, or share any personal information or any other data from you or your device.
+
+All functionalities of the Extension, including any interaction with the native messaging host application, are processed and handled locally on your machine. No data is sent to us or any third parties.
+
+Native Messaging Host
+
+The Extension utilizes a native messaging host application that is installed on your local machine. Communication between the Extension and this native messaging host occurs locally and is solely for the purpose of enabling the Extension's described features. No data from these interactions is transmitted off your device by the Extension or by us.
+
+Permissions
+
+The Extension requests the following permissions to function:
+*   "activeTab" and "scripting": To interact with the content of the active tab, specifically on pages matching the "*/HORIZON/xe-app/index.html" pattern.
+*   "nativeMessaging": To communicate with the companion native application installed on your computer.
+*   "storage": To store user preferences or settings locally on your computer for the Extension's operation. No data from local storage is transmitted to us.
+
+These permissions are used only to provide the core functionality of the Extension locally on your machine.
+
+Changes to This Privacy Policy
+
+We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date. You are advised to review this Privacy Policy periodically for any changes.
+
+Contact Us
+
+If you have any questions about this Privacy Policy, please contact us at: [Provide an Email Address or a link to a contact page] 

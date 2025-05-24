@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SilverShark</title>
+  <style>
+    :root {
+      --primary-color: #2196F3;
+      --secondary-color: #1976D2;
+      --success-color: #4CAF50;
+      --danger-color: #f44336;
+      --text-color: #333;
+      --border-radius: 4px;
+      --spacing: 12px;
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      width: 350px;
+      padding: 16px;
+      margin: 0;
+      color: var(--text-color);
+      background-color: #f5f5f5;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      font-size: 24px;
+      margin: 0 0 16px 0;
+      text-align: center;
+    }
+
+    #connectionStatus {
+      background-color: #fff;
+      padding: 8px;
+      border-radius: var(--border-radius);
+      margin-bottom: 16px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background-color 0.2s;
+      flex: 1;
+      min-width: 80px;
+    }
+
+    button:hover {
+      background-color: var(--secondary-color);
+    }
+
+    #stopButton {
+      background-color: var(--danger-color);
+    }
+
+    #stopButton:hover {
+      background-color: #d32f2f;
+    }
+
+    #loadDataBtn {
+      background-color: var(--success-color);
+    }
+
+    #loadDataBtn:hover {
+      background-color: #388E3C;
+    }
+
+    #recordSummary {
+      background-color: white;
+      padding: 12px;
+      border-radius: var(--border-radius);
+      margin-bottom: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    #recordSummary span {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    #currentRecordDetails {
+      background-color: white;
+      padding: 16px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    #currentRecordDetails p {
+      margin: 8px 0;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    #currentRecordDetails strong {
+      color: var(--primary-color);
+    }
+
+    #toggleCompleteBtn {
+      width: 100%;
+      margin-top: 16px;
+      background-color: var(--success-color);
+    }
+
+    #toggleCompleteBtn:hover {
+      background-color: #388E3C;
+    }
+
+    #status {
+      margin-top: 16px;
+      padding: 8px;
+      border-radius: var(--border-radius);
+      text-align: center;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .nav-buttons button {
+      flex: 1;
+    }
+
+    .nav-buttons button#firstRecordBtn,
+    .nav-buttons button#lastRecordBtn {
+      flex: 0.5;
+      min-width: 40px;
+    }
+
+    .nav-buttons button[title] {
+      position: relative;
+    }
+
+    .nav-buttons button[title]:hover::after {
+      content: attr(title);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 4px 8px;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      border-radius: 4px;
+      font-size: 12px;
+      white-space: nowrap;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <h1>SilverShark</h1>
+  <div id="connectionStatus">Connecting...</div>
+  
+  <div class="button-group">
+    <button id="startButton">Start</button>
+    <button id="pauseButton">Pause</button>
+    <button id="stopButton">Stop</button>
+    <button id="loadDataBtn">Load Data</button>
+  </div>
+  
+  <input type="file" id="fileInput" accept=".xls,.xlsx,.csv" style="display:none;" />
+  <div id="status"></div>
+  
+  <div id="recordSummary">
+    <span id="recordCount">Records: 0</span>
+    <span id="currentRecordInfo">Current: N/A</span>
+    <div class="nav-buttons">
+      <button id="firstRecordBtn" title="Go to first record">|<</button>
+      <button id="prevRecordBtn">Previous</button>
+      <button id="nextRecordBtn">Next</button>
+      <button id="lastRecordBtn" title="Go to last record">>|</button>
+    </div>
+  </div>
+
+  <div id="currentRecordDetails">
+    <p><strong>Application:</strong> <span id="appDetail">-</span></p>
+    <p><strong>Account:</strong> <span id="accDetail">-</span></p>
+    <p><strong>Tran Code:</strong> <span id="tranDetail">-</span></p>
+    <p><strong>Description:</strong> <span id="descDetail">-</span></p>
+    <p><strong>Amount:</strong> <span id="amountDetail">-</span></p>
+    <p><strong>Effective Date:</strong> <span id="effDateDetail">-</span></p>
+    <p><strong>Serial Number:</strong> <span id="serialDetail">-</span></p>
+    <p><strong>Branch:</strong> <span id="branchDetail">-</span></p>
+    <p><strong>Center:</strong> <span id="centerDetail">-</span></p>
+    <button id="toggleCompleteBtn">Mark as Complete</button>
+  </div>
+
+  <div class="button-group" style="margin-top: 16px;">
+    <button id="unmarkAllBtn" style="background-color: var(--secondary-color);">Unmark All Records</button>
+    <button id="clearDataBtn" style="background-color: var(--danger-color);">Clear Data</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html> 
