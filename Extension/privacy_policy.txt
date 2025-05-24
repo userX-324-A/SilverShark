@@ -1,8 +1,8 @@
 Privacy Policy for SilverShark Extension
 
-Last Updated: [Insert Date of Publication]
+Last Updated: 5/24/2025
 
-Thank you for using SilverShark (the "Extension"). This privacy policy describes how [Your Name/Company Name] ("we", "us", or "our") handles information in connection with your use of the Extension.
+Thank you for using SilverShark (the "Extension"). This privacy policy describes how MicroBytes ("we", "us", or "our") handles information in connection with your use of the Extension.
 
 Information We Do Not Collect
 
@@ -29,4 +29,4 @@ We may update this Privacy Policy from time to time. We will notify you of any c
 
 Contact Us
 
-If you have any questions about this Privacy Policy, please contact us at: [Provide an Email Address or a link to a contact page] 
+If you have any questions about this Privacy Policy, please contact us at: MicroBytes2025@outlook.com 
