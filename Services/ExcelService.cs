@@ -65,21 +65,36 @@ public class ExcelService
 
                 foreach (var cell in headerCells)
                 {
-                    var columnName = cell.Value.ToString()?.Trim();
+                    var columnName = cell.Value.ToString()?.Trim().Replace(" ", "");
                     if (!string.IsNullOrEmpty(columnName) && !columnMap.ContainsKey(columnName))
                     {
                         columnMap[columnName] = cell.Address.ColumnNumber;
                     }
                 }
 
-                string[] requiredColumns = { nameof(SilverShark.Models.ExcelRow.Application), nameof(SilverShark.Models.ExcelRow.Account), nameof(SilverShark.Models.ExcelRow.TranCode), nameof(SilverShark.Models.ExcelRow.Description), nameof(SilverShark.Models.ExcelRow.SerialNumber), nameof(SilverShark.Models.ExcelRow.Branch), nameof(SilverShark.Models.ExcelRow.Center), nameof(SilverShark.Models.ExcelRow.EffectiveDate), nameof(SilverShark.Models.ExcelRow.Amount) };
-                bool allColumnsPresent = requiredColumns.All(rc => columnMap.Keys.Any(k => k.Equals(rc, StringComparison.OrdinalIgnoreCase)));
+                string[] baseRequiredColumns = {
+                    nameof(SilverShark.Models.ExcelRow.Application),
+                    nameof(SilverShark.Models.ExcelRow.Account),
+                    nameof(SilverShark.Models.ExcelRow.TranCode),
+                    nameof(SilverShark.Models.ExcelRow.Description),
+                    nameof(SilverShark.Models.ExcelRow.Amount),
+                    nameof(SilverShark.Models.ExcelRow.EffectiveDate)
+                };
 
-                if (!allColumnsPresent)
+                var missingBaseColumns = baseRequiredColumns
+                    .Where(rc => !columnMap.Keys.Any(k => k.Equals(rc.Replace(" ", ""), StringComparison.OrdinalIgnoreCase)))
+                    .ToList();
+
+                if (missingBaseColumns.Any())
                 {
-                    Logger.Log("One or more required columns are missing from the Excel file.");
-                    return new ExcelProcessingResult("One or more required columns are missing.");
+                    Logger.Log($"One or more required columns are missing from the Excel file: {string.Join(", ", missingBaseColumns)}");
+                    return new ExcelProcessingResult($"The following required columns are missing: {string.Join(", ", missingBaseColumns)}");
                 }
+
+                string[] glRequiredColumns = {
+                    nameof(SilverShark.Models.ExcelRow.Branch),
+                    nameof(SilverShark.Models.ExcelRow.Center)
+                };
 
                 for (int rowNum = headerRowIndex + 1; rowNum <= worksheet.LastRowUsed().RowNumber(); rowNum++)
                 {
@@ -87,16 +102,37 @@ public class ExcelService
                     bool rowHasData = false;
                     var currentRow = worksheet.Row(rowNum);
 
-                    if (columnMap.TryGetValue(nameof(SilverShark.Models.ExcelRow.Application), out int appCol)) { rowData.Application = currentRow.Cell(appCol).GetString()?.Trim(); if (!string.IsNullOrEmpty(rowData.Application)) rowHasData = true; }
-                    if (columnMap.TryGetValue(nameof(SilverShark.Models.ExcelRow.Account), out int accCol)) { rowData.Account = currentRow.Cell(accCol).GetString()?.Trim(); if (!string.IsNullOrEmpty(rowData.Account)) rowHasData = true; }
-                    if (columnMap.TryGetValue(nameof(SilverShark.Models.ExcelRow.TranCode), out int tranCol)) { rowData.TranCode = currentRow.Cell(tranCol).GetString()?.Trim(); if (!string.IsNullOrEmpty(rowData.TranCode)) rowHasData = true; }
-                    if (columnMap.TryGetValue(nameof(SilverShark.Models.ExcelRow.Description), out int descCol)) { rowData.Description = currentRow.Cell(descCol).GetString()?.Trim(); if (!string.IsNullOrEmpty(rowData.Description)) rowHasData = true; }
-                    if (columnMap.TryGetValue(nameof(SilverShark.Models.ExcelRow.SerialNumber), out int serialCol)) { rowData.SerialNumber = currentRow.Cell(serialCol).GetString()?.Trim(); if (!string.IsNullOrEmpty(rowData.SerialNumber)) rowHasData = true; }
-                    if (columnMap.TryGetValue(nameof(SilverShark.Models.ExcelRow.Branch), out int branchCol)) { rowData.Branch = currentRow.Cell(branchCol).GetString()?.Trim(); if (!string.IsNullOrEmpty(rowData.Branch)) rowHasData = true; }
-                    if (columnMap.TryGetValue(nameof(SilverShark.Models.ExcelRow.Center), out int centerCol)) { rowData.Center = currentRow.Cell(centerCol).GetString()?.Trim(); if (!string.IsNullOrEmpty(rowData.Center)) rowHasData = true; }
+                    if (columnMap.TryGetValue(nameof(SilverShark.Models.ExcelRow.Application).Replace(" ", ""), out int appCol)) { rowData.Application = currentRow.Cell(appCol).GetString()?.Trim(); if (!string.IsNullOrEmpty(rowData.Application)) rowHasData = true; }
+                    if (columnMap.TryGetValue(nameof(SilverShark.Models.ExcelRow.Account).Replace(" ", ""), out int accCol)) { rowData.Account = currentRow.Cell(accCol).GetString()?.Trim(); if (!string.IsNullOrEmpty(rowData.Account)) rowHasData = true; }
+                    if (columnMap.TryGetValue(nameof(SilverShark.Models.ExcelRow.TranCode).Replace(" ", ""), out int tranCol)) { rowData.TranCode = currentRow.Cell(tranCol).GetString()?.Trim(); if (!string.IsNullOrEmpty(rowData.TranCode)) rowHasData = true; }
+                    if (columnMap.TryGetValue(nameof(SilverShark.Models.ExcelRow.Description).Replace(" ", ""), out int descCol)) { rowData.Description = currentRow.Cell(descCol).GetString()?.Trim(); if (!string.IsNullOrEmpty(rowData.Description)) rowHasData = true; }
+                    if (columnMap.TryGetValue(nameof(SilverShark.Models.ExcelRow.SerialNumber).Replace(" ", ""), out int serialCol)) { rowData.SerialNumber = currentRow.Cell(serialCol).GetString()?.Trim(); if (!string.IsNullOrEmpty(rowData.SerialNumber)) rowHasData = true; }
+                    if (columnMap.TryGetValue(nameof(SilverShark.Models.ExcelRow.Branch).Replace(" ", ""), out int branchCol)) { rowData.Branch = currentRow.Cell(branchCol).GetString()?.Trim(); if (!string.IsNullOrEmpty(rowData.Branch)) rowHasData = true; }
+                    if (columnMap.TryGetValue(nameof(SilverShark.Models.ExcelRow.Center).Replace(" ", ""), out int centerCol)) { rowData.Center = currentRow.Cell(centerCol).GetString()?.Trim(); if (!string.IsNullOrEmpty(rowData.Center)) rowHasData = true; }
+
+                    if ("GL".Equals(rowData.Application, StringComparison.OrdinalIgnoreCase))
+                    {
+                        var missingGlColumns = glRequiredColumns
+                            .Where(rc => !columnMap.Keys.Any(k => k.Equals(rc.Replace(" ", ""), StringComparison.OrdinalIgnoreCase)))
+                            .ToList();
+
+                        if (missingGlColumns.Any())
+                        {
+                            var error = $"For 'GL' applications, the following columns are required but were not found: {string.Join(", ", missingGlColumns)}";
+                            Logger.Log(error);
+                            return new ExcelProcessingResult(error);
+                        }
+
+                        if (string.IsNullOrWhiteSpace(rowData.Branch) || string.IsNullOrWhiteSpace(rowData.Center))
+                        {
+                            var error = $"Row {rowNum}: For 'GL' applications, Branch and Center values are required.";
+                            Logger.Log(error);
+                            return new ExcelProcessingResult(error);
+                        }
+                    }
 
                     // Handling dates and decimal with robust parsing
-                    if (columnMap.TryGetValue(nameof(SilverShark.Models.ExcelRow.EffectiveDate), out int effDateCol))
+                    if (columnMap.TryGetValue(nameof(SilverShark.Models.ExcelRow.EffectiveDate).Replace(" ", ""), out int effDateCol))
                     {
                         var effDateCell = currentRow.Cell(effDateCol);
                         if (effDateCell.TryGetValue<DateTime>(out DateTime effDate))
@@ -110,7 +146,7 @@ public class ExcelService
                          if(!String.IsNullOrEmpty(rowData.EffectiveDate)) rowHasData = true;
                     }
 
-                    if (columnMap.TryGetValue(nameof(SilverShark.Models.ExcelRow.Amount), out int amountCol))
+                    if (columnMap.TryGetValue(nameof(SilverShark.Models.ExcelRow.Amount).Replace(" ", ""), out int amountCol))
                     {
                         var amountCell = currentRow.Cell(amountCol);
                         if (amountCell.TryGetValue<decimal>(out decimal amount))

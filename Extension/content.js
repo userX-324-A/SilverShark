@@ -3,13 +3,7 @@
 console.log("Content script loaded.");
 
 // --- BEGIN CONFIGURATION ---
-const CONFIG = {
-  timeouts: {
-    defaultElementWait: 10000, // Default timeout for waiting for elements
-    addAnotherButtonWait: 5000, // Timeout for the 'add another' button
-    formResetWait: 7000, // Timeout for waiting for form fields to reset after "Add Another" click
-    formResetAfterErrorWait: 5000 // Timeout for waiting for form reset after handling an error popup
-  },
+let CONFIG = {
   selectors: {
     application: '[data-el-id="fldAppl"]',
     account: '[data-el-id="fldAcct"]',
@@ -35,10 +29,34 @@ const CONFIG = {
   // Field keys that might be skipped if blank or null
   skippableBlankFields: ['effectiveDate', 'serialNumber']
 };
+let timeouts = {};
+
+// Load timeouts from storage and set defaults
+chrome.storage.sync.get({
+  timeouts: {
+    defaultElementWait: 10000,
+    addAnotherButtonWait: 5000,
+    formResetWait: 7000,
+    formResetAfterErrorWait: 5000
+  }
+}, function(items) {
+  timeouts = items.timeouts;
+  console.log("Timeouts loaded from storage:", timeouts);
+});
+
+// Listen for changes in storage
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+  if (namespace === 'sync' && changes.timeouts) {
+    timeouts = changes.timeouts.newValue;
+    console.log("Timeouts updated:", timeouts);
+  }
+});
+
 // --- END CONFIGURATION ---
 
 // --- BEGIN HELPER FOR DYNAMIC FIELDS ---
-async function waitForElementWithOptions(selector, valueToSelect, timeoutMs = CONFIG.timeouts.defaultElementWait) {
+async function waitForElementWithOptions(selector, valueToSelect, timeoutMs) {
+  const waitTimeout = timeoutMs || timeouts.defaultElementWait;
   console.log(`Waiting for options in ${selector} or for value '${valueToSelect}'`);
   return new Promise((resolve, reject) => {
     const startTime = Date.now();
@@ -75,7 +93,7 @@ async function waitForElementWithOptions(selector, valueToSelect, timeoutMs = CO
         // For now, we continue polling if it's a SELECT without the desired option/any options.
       } // else element not found yet
 
-      if (Date.now() - startTime > timeoutMs) {
+      if (Date.now() - startTime > waitTimeout) {
         clearInterval(interval);
         console.warn(`Timeout waiting for options or value '${valueToSelect}' in ${selector}`);
         reject(new Error(`Timeout waiting for options or value '${valueToSelect}' in ${selector}`));
@@ -86,7 +104,8 @@ async function waitForElementWithOptions(selector, valueToSelect, timeoutMs = CO
 // --- END HELPER FOR DYNAMIC FIELDS ---
 
 // --- BEGIN HELPER FOR ELEMENT EXISTENCE ---
-async function waitForElement(selector, timeoutMs = CONFIG.timeouts.defaultElementWait) {
+async function waitForElement(selector, timeoutMs) {
+  const waitTimeout = timeoutMs || timeouts.defaultElementWait;
   console.log(`Waiting for element ${selector} to exist`);
   return new Promise((resolve, reject) => {
     const startTime = Date.now();
@@ -96,7 +115,7 @@ async function waitForElement(selector, timeoutMs = CONFIG.timeouts.defaultEleme
         clearInterval(interval);
         console.log(`Element ${selector} found.`);
         resolve(element);
-      } else if (Date.now() - startTime > timeoutMs) {
+      } else if (Date.now() - startTime > waitTimeout) {
         clearInterval(interval);
         console.warn(`Timeout waiting for element ${selector} to exist.`);
         reject(new Error(`Timeout waiting for element ${selector}`));
@@ -292,7 +311,7 @@ async function _handleAddAnotherButtonClick() {
   console.log("Attempting to click 'add another' button and wait for form reset.");
 
   try {
-    const addButton = await waitForElement(CONFIG.selectors.addAnotherButton, CONFIG.timeouts.addAnotherButtonWait);
+    const addButton = await waitForElement(CONFIG.selectors.addAnotherButton, timeouts.addAnotherButtonWait);
     if (addButton.disabled) {
       console.warn("The 'add another' button is disabled.");
       addAnotherStatus.statusMessage = "Add Another button disabled.";
@@ -332,7 +351,7 @@ async function _handleAddAnotherButtonClick() {
     // --- End Helper ---
 
     // Initial wait for form reset
-    let resetAttempt = await waitForFormReset(CONFIG.timeouts.formResetWait, "Clicked. ");
+    let resetAttempt = await waitForFormReset(timeouts.formResetWait, "Clicked. ");
     addAnotherStatus.fieldsWereReset = resetAttempt.success;
     addAnotherStatus.statusMessage = resetAttempt.message;
 
@@ -352,7 +371,7 @@ async function _handleAddAnotherButtonClick() {
             console.log("Force post button clicked.");
             addAnotherStatus.statusMessage += "Force post clicked. ";
             // Wait for reset again after clicking force post
-            resetAttempt = await waitForFormReset(CONFIG.timeouts.formResetAfterErrorWait, "After force post: ");
+            resetAttempt = await waitForFormReset(timeouts.formResetAfterErrorWait, "After force post: ");
             addAnotherStatus.fieldsWereReset = resetAttempt.success;
             addAnotherStatus.statusMessage += resetAttempt.message;
           } else if (forceButton && forceButton.disabled) {
@@ -411,9 +430,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   } else if (message.action === "pause") {
     pauseDataEntry();
     sendResponse({ status: "paused" });
-  } else if (message.action === "stop") {
-    stopDataEntry();
-    sendResponse({ status: "stopped" });
   }
   // Return true to indicate you wish to send a response asynchronously.
   // This is important if fillFormFields will be sending the response.
@@ -432,13 +448,6 @@ function pauseDataEntry() {
   console.log("Pausing data entry...");
   isPaused = true;
   // TODO: Store current state if needed
-}
-
-function stopDataEntry() {
-  console.log("Stopping data entry...");
-  isPaused = true; 
-  currentDataRecord = null;
-  // TODO: Clear any ongoing operations or reset state
 }
 
 // Make fillFormFields async to use await for waitForElementWithOptions

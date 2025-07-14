@@ -16,7 +16,7 @@ let isPaused = false;
 let isProcessing = false;
 
 // Declare UI elements at a higher scope
-let startButton, pauseButton, stopButton, loadDataBtn;
+let startButton, pauseButton, loadDataBtn;
 let prevRecordBtn, nextRecordBtn, firstRecordBtn, lastRecordBtn; // Added first/last record buttons
 let connectionStatusDiv, statusDiv;
 let recordCountSpan, currentRecordInfoSpan;
@@ -81,7 +81,6 @@ function updateButtonStates() {
   buttons.forEach(button => {
     if (button) button.disabled = !isConnected;
   });
-  if (stopButton) stopButton.disabled = !isConnected;
   if (pauseButton) pauseButton.disabled = !isConnected; // Or other logic for pause
 
   // Enable/disable navigation buttons
@@ -173,7 +172,6 @@ function updateRecordDisplay() {
 document.addEventListener('DOMContentLoaded', function () {
   startButton = document.getElementById('startButton');
   pauseButton = document.getElementById('pauseButton');
-  stopButton = document.getElementById('stopButton');
   loadDataBtn = document.getElementById('loadDataBtn');
   prevRecordBtn = document.getElementById('prevRecordBtn');
   nextRecordBtn = document.getElementById('nextRecordBtn');
@@ -499,22 +497,6 @@ document.addEventListener('DOMContentLoaded', function () {
     statusDiv.textContent = isPaused ? "Processing paused." : "Processing resumed.";
   });
 
-  stopButton.addEventListener('click', function() {
-    isProcessing = false;
-    isPaused = false;
-    pauseButton.textContent = "Pause";
-    pauseButton.disabled = true;
-    sendMessageToContentScript({ action: "stop" });
-    if (port) {
-      console.log("Disconnecting from native host via stop button.");
-      port.disconnect();
-    } else {
-      isConnected = false;
-      updateConnectionStatusDisplay("Disconnected (port was not active).", false);
-      updateButtonStates();
-    }
-  });
-
   function connectToNativeHost() {
     if (port) {
       console.log("Already connected or attempting to connect.");
@@ -560,7 +542,7 @@ document.addEventListener('DOMContentLoaded', function () {
           },
           "excel_processing_error": (message) => {
             console.error("Error processing Excel file from host:", message.message);
-            statusDiv.textContent = `Error from host processing Excel: ${message.message}`;
+            statusDiv.textContent = `Error: ${message.message}`;
             allExcelRecords = []; // Clear data on processing error
             totalRecordsLoaded = 0;
             currentRecordIndex = -1;
