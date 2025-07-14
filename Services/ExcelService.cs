@@ -77,8 +77,7 @@ public class ExcelService
                     nameof(SilverShark.Models.ExcelRow.Account),
                     nameof(SilverShark.Models.ExcelRow.TranCode),
                     nameof(SilverShark.Models.ExcelRow.Description),
-                    nameof(SilverShark.Models.ExcelRow.Amount),
-                    nameof(SilverShark.Models.ExcelRow.EffectiveDate)
+                    nameof(SilverShark.Models.ExcelRow.Amount)
                 };
 
                 var missingBaseColumns = baseRequiredColumns
