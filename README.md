@@ -31,22 +31,17 @@ The installation process involves two parts: installing the native companion app
 
 ### 1. Companion Application
 
-The companion application is installed using a standard Windows Installer (`.msi`).
-
 1.  **Prerequisites**: Ensure you have **.NET Framework 4.7.2** or a later version installed on your system.
-2.  Run the `SilverSharkInstaller.msi` file located in the `SilverSharkInstaller/Release/` directory.
-3.  Follow the on-screen instructions to complete the installation.
+2.  Download the latest `SilverSharkInstaller.msi` from the [SilverShark GitHub Releases page](https://github.com/userX-324-A/SilverShark/releases).
+3.  Run the downloaded installer and follow the on-screen instructions to complete the installation.
 
 The installer will place the necessary application files on your computer and create a required registry key that allows Google Chrome to securely communicate with the application.
 
 ### 2. Browser Extension
 
-1.  Open Google Chrome and navigate to the extensions page by typing `chrome://extensions` in the address bar.
-2.  Enable **Developer mode** by clicking the toggle switch in the top-right corner of the page.
-3.  Click the **Load unpacked** button that appears.
-4.  In the file selection dialog, navigate to the root directory of this project and select the `Extension` folder.
+The browser extension can be installed from the official Chrome Web Store.
 
-The SilverShark extension should now appear in your list of installed extensions and be ready to use.
+*A link to the store listing will be provided here once it is published.*
 
 ## Usage
 
@@ -56,20 +51,20 @@ To use SilverShark, you first need to prepare your transaction data in an Excel 
 
 The following table details the columns that SilverShark can process from the Excel file.
 
-| Field Name      | Required?                                | Description                                                                                             |
-| --------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `Application`   | **Yes**                                  | The application code for the transaction (e.g., "SAV", "DDA", "GL").                                    |
-| `Account`       | **Yes**                                  | The account number for the transaction.                                                                 |
-| `TranCode`      | **Yes**                                  | The transaction code.                                                                                   |
-| `Description`   | **Yes**                                  | A description for the transaction.                                                                      |
-| `Amount`        | **Yes**                                  | The transaction amount. Should be a numerical value.                                                    |
-| `EffectiveDate` | Optional                                 | The effective date of the transaction. Will be formatted as `MM/dd/yyyy`.                               |
-| `SerialNumber`  | Optional                                 | The serial number, check number, or other identifier for the transaction.                               |
-| `Branch`        | **Conditional** (Required if `Application` is `GL`) | The branch number. Required for General Ledger (GL) transactions.                                       |
-| `Center`        | **Conditional** (Required if `Application` is `GL`) | The cost center number. Required for General Ledger (GL) transactions.                                  |
+| Field Name      | Required?       | Description                                                                                             |
+| --------------- | --------------- | ------------------------------------------------------------------------------------------------------- |
+| `Application`   | **Yes**         | The application code for the transaction (e.g., "SAV", "DDA", "GL").                                    |
+| `Account`       | **Yes**         | The account number for the transaction.                                                                 |
+| `TranCode`      | **Yes**         | The transaction code.                                                                                   |
+| `Description`   | **Yes**         | A description for the transaction.                                                                      |
+| `Amount`        | **Yes**         | The transaction amount. Should be a numerical value.                                                    |
+| `EffectiveDate` | Optional        | The effective date of the transaction. Will be formatted as `MM/dd/yyyy`.                               |
+| `SerialNumber`  | Optional        | The serial number, check number, or other identifier for the transaction.                               |
+| `Branch`        | **Conditional** | The branch number. **Required if `Application` is `GL`**.                                               |
+| `Center`        | **Conditional** | The cost center number. **Required if `Application` is `GL`**.                                          |
 
 After preparing your Excel file, you can use the extension as described in the "How It Works" section to load and process your transactions.
 
 ## Contributing
 
-Information for developers who wish to contribute to the SilverShark project.
+We welcome contributions and feedback! If you encounter any bugs, have a feature request, or would like to contribute to the project, please open an issue on the [GitHub Issues page](https://github.com/userX-324-A/SilverShark/issues). Please provide a detailed description of the issue or suggestion.
