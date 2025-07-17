@@ -53,7 +53,7 @@ The following table details the columns that SilverShark can process from the Ex
 
 | Field Name      | Required?       | Description                                                                                             |
 | --------------- | --------------- | ------------------------------------------------------------------------------------------------------- |
-| `Application`   | **Yes**         | The application code for the transaction (e.g., "SAV", "DDA", "GL").                                    |
+| `Application`   | **Yes**         | The application code for the transaction (e.g., "DD", "SV", "GL").                                      |
 | `Account`       | **Yes**         | The account number for the transaction.                                                                 |
 | `TranCode`      | **Yes**         | The transaction code.                                                                                   |
 | `Description`   | **Yes**         | A description for the transaction.                                                                      |

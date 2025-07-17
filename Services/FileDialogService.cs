@@ -26,7 +26,7 @@ public class FileDialogService
                     using (OpenFileDialog openFileDialog = new OpenFileDialog())
                     {
                         openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                        openFileDialog.Filter = "Excel Files (*.xlsx;*.xls;*.csv)|*.xlsx;*.xls;*.csv";
+                        openFileDialog.Filter = "Excel Files (*.xlsx)|*.xlsx";
                         openFileDialog.FilterIndex = 1;
                         openFileDialog.RestoreDirectory = true;
 

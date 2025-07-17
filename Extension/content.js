@@ -131,13 +131,19 @@ let currentDataRecord = null; // Will hold the current record to be entered
 // --- BEGIN FIELDS SPECIFICATION BUILDER ---
 function buildFieldsSpec(data) {
   // Base fields that are always processed
+  let amountValue = data.Amount;
+  if (amountValue && typeof amountValue === 'string') {
+    // Remove commas from the amount string to ensure it's a raw number.
+    amountValue = amountValue.replace(/,/g, '');
+  }
+
   let baseSpec = {
     application: { selector: CONFIG.selectors.application, value: data.Application, originalKey: 'Application' },
     account: { selector: CONFIG.selectors.account, value: data.Account, originalKey: 'Account' },
     tranCodeCategory: { selector: CONFIG.selectors.tranCodeCategory, value: CONFIG.defaultValues.tranCodeCategory, originalKey: 'TranCodeCategory' },
     tranCode: { selector: CONFIG.selectors.tranCode, value: data.TranCode, originalKey: 'TranCode' },
     description: { selector: CONFIG.selectors.description, value: data.Description, originalKey: 'Description' },
-    amount: { selector: CONFIG.selectors.amount, value: data.Amount, originalKey: 'Amount' },
+    amount: { selector: CONFIG.selectors.amount, value: amountValue, originalKey: 'Amount' },
     effectiveDate: { selector: CONFIG.selectors.effectiveDate, value: data.EffectiveDate, originalKey: 'EffectiveDate' },
     serialNumber: { selector: CONFIG.selectors.serialNumber, value: data.SerialNumber, originalKey: 'SerialNumber' }
   };
