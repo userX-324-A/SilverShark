@@ -414,6 +414,14 @@ async function _handleAddAnotherButtonClick() {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log("Message received in content script:", message);
 
+  if (message.action === "check_page") {
+    // Check for a unique element on the target page.
+    const isTargetPage = !!document.querySelector(CONFIG.selectors.application);
+    console.log("Page check:", isTargetPage ? "On target page." : "Not on target page.");
+    sendResponse({ status: isTargetPage ? "page_found" : "page_not_found" });
+    return; // No async response needed here.
+  }
+
   if (message.action === "start") {
     if (message.data) {
       currentDataRecord = message.data;

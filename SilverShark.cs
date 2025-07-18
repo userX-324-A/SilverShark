@@ -119,8 +119,7 @@ namespace SilverShark // Ensure Program class is in a namespace
                     Logger.Log("File selection cancelled or failed.");
                     SendMessage(outputStream, new HostResponseMessage
                     {
-                        status = "file_selection_cancelled",
-                        received_command = originalMessageFromExtension.command,
+                        status = "error",
                         message = "File selection was cancelled or failed."
                     });
                 }
@@ -131,7 +130,6 @@ namespace SilverShark // Ensure Program class is in a namespace
                 SendMessage(outputStream, new HostResponseMessage
                 {
                     status = "error",
-                    received_command = originalMessageFromExtension.command,
                     message = "Error occurred during file selection dialog."
                 });
             }
@@ -149,14 +147,14 @@ namespace SilverShark // Ensure Program class is in a namespace
                 if (string.IsNullOrEmpty(filePath))
                 {
                     Logger.Log("File path is null or empty in process_excel_file command.");
-                    SendMessage(outputStream, new HostResponseMessage { status = "error", received_command = incomingMessage.command, original_params = incomingMessage.@params, message = "File path not provided." });
+                    SendMessage(outputStream, new HostResponseMessage { status = "error", message = "File path not provided." });
                     return;
                 }
 
                 if (!File.Exists(filePath))
                 {
                     Logger.Log($"File not found: {filePath}");
-                    SendMessage(outputStream, new HostResponseMessage { status = "error", received_command = incomingMessage.command, original_params = incomingMessage.@params, message = $"File not found: {filePath}" });
+                    SendMessage(outputStream, new HostResponseMessage { status = "error", message = $"File not found: {filePath}" });
                     return;
                 }
 
@@ -167,10 +165,8 @@ namespace SilverShark // Ensure Program class is in a namespace
                     Logger.Log($"Successfully processed {result.Data.Count} rows from Excel file.");
                     SendMessage(outputStream, new HostResponseMessage
                     {
-                        status = "excel_data_processed",
-                        received_command = incomingMessage.command,
-                        original_params = incomingMessage.@params,
-                        excelData = result.Data,
+                        status = "processed_excel_data",
+                        data = result.Data,
                         message = $"Successfully processed {result.Data.Count} rows."
                     });
                 }
@@ -179,9 +175,7 @@ namespace SilverShark // Ensure Program class is in a namespace
                     Logger.Log($"Error processing Excel file: {result.ErrorMessage}");
                     SendMessage(outputStream, new HostResponseMessage
                     {
-                        status = "excel_processing_error",
-                        received_command = incomingMessage.command,
-                        original_params = incomingMessage.@params,
+                        status = "error",
                         message = result.ErrorMessage
                     });
                 }
@@ -189,12 +183,12 @@ namespace SilverShark // Ensure Program class is in a namespace
             catch (JsonException jsonEx)
             {
                 Logger.Log($"JSON Deserialization Error for params in process_excel_file: {jsonEx.Message}");
-                SendMessage(outputStream, new HostResponseMessage { status = "error", received_command = incomingMessage.command, original_params = incomingMessage.@params, message = "Invalid parameters for processing Excel file." });
+                SendMessage(outputStream, new HostResponseMessage { status = "error", message = "Invalid parameters for processing Excel file." });
             }
             catch (Exception ex) // Catch unexpected errors during the process
             {
                 Logger.Log($"Unexpected error in HandleProcessExcelFile for '{filePath}': {ex.Message}{Environment.NewLine}StackTrace: {ex.StackTrace}");
-                SendMessage(outputStream, new HostResponseMessage { status = "excel_processing_error", received_command = incomingMessage.command, original_params = incomingMessage.@params, message = $"Unexpected error processing Excel file: {ex.Message}" });
+                SendMessage(outputStream, new HostResponseMessage { status = "error", message = $"Unexpected error processing Excel file: {ex.Message}" });
             }
         }
 
@@ -203,8 +197,6 @@ namespace SilverShark // Ensure Program class is in a namespace
             HostResponseMessage response = new HostResponseMessage
             {
                 status = "success",
-                received_command = incomingMessage.command,
-                original_params = incomingMessage.@params,
                 message = $"Command '{incomingMessage.command}' received and processed by generic handler."
             };
             SendMessage(outputStream, response);
