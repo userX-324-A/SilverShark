@@ -65,6 +65,18 @@ The following table details the columns that SilverShark can process from the Ex
 
 After preparing your Excel file, you can use the extension as described in the "How It Works" section to load and process your transactions.
 
+## Testing
+
+You can test the extension's functionality by using the provided sample data file and a mock transaction entry website.
+
+1.  **Locate the Sample Data**: Inside the `Samples` folder of this project, you will find `SampleData01.xlsx`. This Excel file is pre-formatted with data that you can use for testing.
+2.  **Open the Test Website**: Navigate to the [MockXE test website](https://mockxe20250718075956-dsbxhrb4fvb8eech.westus2-01.azurewebsites.net/). This website provides a simple interface that mimics the real transaction entry page for testing purposes.
+3.  **Run the Extension**:
+    *   With the test website open, click the SilverShark extension icon in your browser.
+    *   Click the "Load Data" button.
+    *   In the file dialog that appears, select the `SampleData01.xlsx` file.
+    *   The extension will load and display the data. You can then proceed with the automated data entry to see the extension in action on the test page.
+
 ## Contributing
 
 We welcome contributions and feedback! If you encounter any bugs, have a feature request, or would like to contribute to the project, please open an issue on the [GitHub Issues page](https://github.com/userX-324-A/SilverShark/issues). Please provide a detailed description of the issue or suggestion.
